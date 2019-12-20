@@ -34,8 +34,6 @@ class AdaptiveThreshold(AbstractThresholdType):
 
         self._value = v_thresh
         self._v_base = v_thresh
-        self._spike = 0.0 # no increment --- just a mock-up
-        self._decay = 1.0 # no decay --- just a mock-up
         self._tau = tau
         self._v_increase = v_increase
         self._v_rest = v_rest
