@@ -7,6 +7,46 @@ from spynnaker.pyNN.utilities.ranged import SpynnakerRangeDictionary
 from data_specification.enums import DataType
 from enum import Enum
 
+# "sim_code": """
+#         $(I) = $(Isyn);
+#         if ($(RefracTime) <= 0.0) {
+#             scalar alpha = (($(Isyn) + $(Ioffset)) * $(Rmembrane)) + $(Vrest);
+#             $(V) = alpha - ($(ExpTC) * (alpha - $(V)));
+#             $(VThreshAdapt) = $(Vthresh) + ($(VThreshAdapt) - $(Vthresh))* $(DownThresh);
+#         }
+#         else {
+#             $(RefracTime) -= DT;
+#         }
+#     """,
+#
+# "threshold_condition_code": "$(RefracTime) <= 0.0 && $(V) >= $(VThreshAdapt)",
+#
+# "reset_code": """
+#         $(V) = $(Vreset);
+#         $(RefracTime) = $(TauRefrac);
+#         $(VThreshAdapt) += $(UpThresh)*($(Vthresh) - $(Vrest));
+#     """,
+#
+# "var_name_types": [
+#     ("V", "scalar"),
+#     ("I", "scalar"),
+#     ("RefracTime", "scalar"),
+#     ("VThreshAdapt", "scalar"),
+# ],
+#
+# "param_name_types": {
+#     "Rmembrane": "scalar",  # Membrane resistance
+#     "ExpTC": "scalar",  # Membrane time constant [ms]
+#     "Vrest": "scalar",  # Resting membrane potential [mV]
+#     "Vreset": "scalar",  # Reset voltage [mV]
+#     "Vthresh": "scalar",  # Spiking threshold [mV]
+#     "Ioffset": "scalar",  # Offset current
+#     "TauRefrac": "scalar",
+#     "UpThresh": "scalar",
+#     "DownThresh": "scalar",
+# }
+
+
 # TODO create constants to EXACTLY match the parameter names
 I_OFFSET_NAME = "i_offset"
 MY_NEURON_PARAMETER_NAME = "my_neuron_parameter"
