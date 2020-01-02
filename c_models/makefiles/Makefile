@@ -1,5 +1,5 @@
-MODELS = IF_curr_exp_i
-    # IF_curr_exp_i_stdp
+MODELS = IF_curr_exp_i \
+         IF_curr_exp_i_stdp
 
 
 
