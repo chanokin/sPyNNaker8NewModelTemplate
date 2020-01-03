@@ -1,5 +1,6 @@
 MODELS = IF_curr_exp_i \
-         IF_curr_exp_i_stdp
+         IF_curr_exp_i_stdp_step_additive \
+         IF_curr_exp_i_stdp_step_multiplicative
 
 
 
