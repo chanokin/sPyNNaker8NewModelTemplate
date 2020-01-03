@@ -15,6 +15,7 @@ address_t timing_initialise(address_t address) {
     tau_minus = *accum_address;
     ++accum_address;
 
+    log_info("\t\tTau Plus: %k, Minus: %k", tau_plus, tau_minus);
     log_info("timing_initialise: completed successfully");
     return (address_t)(accum_address);
 }
