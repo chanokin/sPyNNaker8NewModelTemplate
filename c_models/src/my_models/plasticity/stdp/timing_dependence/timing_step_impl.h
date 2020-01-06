@@ -85,20 +85,21 @@ static inline update_state_t timing_apply_pre_spike(
     // TODO: Perform depression on pre spikes that occur after the
     // current spike
     accum time_since_last_post = (accum) (time - last_post_time);
-    if (time_since_last_post <= tau_plus) {
+    if (time_since_last_post > 0) {
+        if (time_since_last_post <= tau_plus) {
 
-        log_debug("\t\t\tappy_pre time_since_last_post=%k, tau_plus=%d\n",
-                time_since_last_post, tau_plus);
+            log_debug("\t\t\tappy_pre time_since_last_post=%k, tau_plus=%d\n",
+                    time_since_last_post, tau_plus);
 
-        return weight_one_term_apply_potentiation(previous_state, STDP_FIXED_POINT_ONE);
+            return weight_one_term_apply_potentiation(previous_state, STDP_FIXED_POINT_ONE);
 
-    } else if (time_since_last_post > tau_plus && time_since_last_post <= tau_minus){
+        } else if (time_since_last_post <= tau_minus){
 
-        log_debug("\t\t\tappy_pre time_since_last_post=%k, tau_minus=%d\n",
-                time_since_last_post, tau_minus);
+            log_debug("\t\t\tappy_pre time_since_last_post=%k, tau_minus=%d\n",
+                    time_since_last_post, tau_minus);
 
-        return weight_one_term_apply_depression(previous_state, STDP_FIXED_POINT_ONE);
-
+            return weight_one_term_apply_depression(previous_state, STDP_FIXED_POINT_ONE);
+        }
     } else {
         return previous_state;
     }
@@ -117,20 +118,21 @@ static inline update_state_t timing_apply_post_spike(
     // TODO: Perform potentiation on post spikes that occur after the
     // current spike
     accum time_since_last_pre = (accum) (time - last_pre_time);
-    if (time_since_last_pre <= tau_plus) {
+    if (time_since_last_pre > 0) {
+        if (time_since_last_pre <= tau_plus) {
 
-        log_debug("\t\t\tappy_post time_since_last_pre=%k, tau_plus=%d\n",
-                time_since_last_pre, tau_plus);
+            log_debug("\t\t\tappy_post time_since_last_pre=%k, tau_plus=%d\n",
+                    time_since_last_pre, tau_plus);
 
-        return weight_one_term_apply_potentiation(previous_state, STDP_FIXED_POINT_ONE);
+            return weight_one_term_apply_potentiation(previous_state, STDP_FIXED_POINT_ONE);
 
-    } else if (time_since_last_pre > tau_plus && time_since_last_pre <= tau_minus){
+        } else if (time_since_last_pre <= tau_minus){
 
-        log_debug("\t\t\tappy_post time_since_last_pre=%k, tau_minus=%d\n",
-                time_since_last_pre, tau_minus);
+            log_debug("\t\t\tappy_post time_since_last_pre=%k, tau_minus=%d\n",
+                    time_since_last_pre, tau_minus);
 
-        return weight_one_term_apply_depression(previous_state, STDP_FIXED_POINT_ONE);
-
+            return weight_one_term_apply_depression(previous_state, STDP_FIXED_POINT_ONE);
+        }
     } else {
         return previous_state;
     }
