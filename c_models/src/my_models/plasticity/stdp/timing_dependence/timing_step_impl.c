@@ -5,7 +5,7 @@ accum tau_minus;
 
 address_t timing_initialise(address_t address) {
     log_info("timing_initialise: starting");
-    log_info("\tSTDP nearest-pair rule");
+    log_info("\tSTDP step-wise nearest rule");
 
     // Copy LUTs from following memory
     accum *accum_address = (accum *)address;

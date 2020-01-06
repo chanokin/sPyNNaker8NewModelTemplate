@@ -15,6 +15,7 @@
 
 import logging
 from spinn_utilities.overrides import overrides
+from data_specification.enums import DataType
 from spinn_front_end_common.utilities.constants import (
     BYTES_PER_SHORT, BYTES_PER_WORD)
 from spynnaker.pyNN.models.neuron.plasticity.stdp.common\
@@ -28,24 +29,21 @@ from spinn_front_end_common.utilities.globals_variables import get_simulator
 logger = logging.getLogger(__name__)
 
 
-class TimingDependenceStep(AbstractTimingDependence):
+class TimingDependenceStepBase(AbstractTimingDependence):
     __slots__ = [
         "__synapse_structure",
         "__tau_minus",
-        "__tau_minus_data",
-        "__tau_plus",
-        "__tau_plus_data"]
+        "__tau_plus",]
 
     def __init__(self, tau_plus=20.0, tau_minus=20.0):
-        self.__tau_plus = tau_plus
-        self.__tau_minus = tau_minus
 
         self.__synapse_structure = SynapseStructureWeightOnly()
 
         # provenance data
         ts = get_simulator().machine_time_step / 1000.0
-        self.__tau_plus_data = get_exp_lut_array(ts, self.__tau_plus)
-        self.__tau_minus_data = get_exp_lut_array(ts, self.__tau_minus)
+#         print(ts, tau_plus, tau_plus / ts, tau_minus, tau_minus / ts)
+        self.__tau_plus = tau_plus / ts
+        self.__tau_minus = tau_minus / ts
 
     @property
     def tau_plus(self):
@@ -75,8 +73,7 @@ class TimingDependenceStep(AbstractTimingDependence):
 
     @overrides(AbstractTimingDependence.get_parameters_sdram_usage_in_bytes)
     def get_parameters_sdram_usage_in_bytes(self):
-        return BYTES_PER_WORD * (len(self.__tau_plus_data) +
-                                 len(self.__tau_minus_data))
+        return 2 * BYTES_PER_WORD 
 
     @property
     def n_weight_terms(self):
@@ -86,8 +83,8 @@ class TimingDependenceStep(AbstractTimingDependence):
     def write_parameters(self, spec, machine_time_step, weight_scales):
 
         # Write lookup tables
-        spec.write_array(self.__tau_plus_data)
-        spec.write_array(self.__tau_minus_data)
+        spec.write_value(self.tau_plus, data_type=DataType.S1615)
+        spec.write_value(self.tau_minus, data_type=DataType.S1615)
 
     @property
     def synaptic_structure(self):
@@ -96,3 +93,36 @@ class TimingDependenceStep(AbstractTimingDependence):
     @overrides(AbstractTimingDependence.get_parameter_names)
     def get_parameter_names(self):
         return ['tau_plus', 'tau_minus']
+
+
+
+class TimingDependenceStep(TimingDependenceStepBase):
+    __slots__ = [
+        "__a_plus",
+        "__a_minus"]
+
+    def __init__(
+            self, tau_plus=2.0,
+            tau_minus=20.0,
+            A_plus=0.01, A_minus=0.01):
+        super(TimingDependenceStep, self).__init__(
+            tau_plus=tau_plus, tau_minus=tau_minus)
+
+        self.__a_plus = A_plus
+        self.__a_minus = A_minus
+
+    @property
+    def A_plus(self):
+        return self.__a_plus
+
+    @A_plus.setter
+    def A_plus(self, new_value):
+        self.__a_plus = new_value
+
+    @property
+    def A_minus(self):
+        return self.__a_minus
+
+    @A_minus.setter
+    def A_minus(self, new_value):
+        self.__a_minus = new_value
