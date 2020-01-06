@@ -65,7 +65,7 @@ setup(
         'SpiNNMan >= 1!5.1.0, < 1!6.0.0',
         'SpiNNaker_PACMAN >= 1!5.1.0, < 1!6.0.0',
         'SpiNNaker_DataSpecification >= 1!5.1.0, < 1!6.0.0',
-        'spalloc >= 2.0.2, < 3.0.0',
+        'spalloc >= 2.0.1, < 3.0.0',
         'SpiNNFrontEndCommon >= 1!5.1.0, < 1!6.0.0',
         'sPyNNaker >= 1!5.1.0, < 1!6.0.0',
         'sPyNNaker8 >= 1!5.1.0, < 1!6.0.0'],

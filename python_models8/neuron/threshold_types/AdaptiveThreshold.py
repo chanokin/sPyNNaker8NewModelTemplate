@@ -4,10 +4,10 @@ from spynnaker.pyNN.models.neuron.threshold_types import AbstractThresholdType
 import numpy
 
 
-_THRESHOLD_TAU = "tau_thresh"
-_THRESHOLD_VALUE = "v_thresh"
+_THRESHOLD_TAU = "tau_threshold"
+_THRESHOLD_VALUE = "v_threshold"
 _THRESHOLD_BASE = "base_v_thresh"
-_THRESHOLD_UP = "v_increase"
+_THRESHOLD_UP = "w_threshold"
 _THRESHOLD_DOWN = "v_decay"
 
 _UNITS = dict(
@@ -39,11 +39,11 @@ class AdaptiveThreshold(AbstractThresholdType):
         self._v_rest = v_rest
 
     @property
-    def v_thresh(self):
+    def v_threshold(self):
         return self._value
 
-    @v_thresh.setter
-    def v_thresh(self, x):
+    @v_threshold.setter
+    def v_threshold(self, x):
         self._value = x
 
     @property
@@ -55,19 +55,19 @@ class AdaptiveThreshold(AbstractThresholdType):
         self._v_base = x
 
     @property
-    def v_increase(self):
+    def w_threshold(self):
         return self._v_increase
 
-    @v_increase.setter
-    def v_increase(self, x):
+    @w_threshold.setter
+    def w_threshold(self, x):
         self._v_increase = x
 
     @property
-    def tau(self):
+    def tau_threshold(self):
         return self._tau
 
-    @tau.setter
-    def tau(self, x):
+    @tau_threshold.setter
+    def tau_threshold(self, x):
         self._tau = x
 
 
@@ -77,12 +77,13 @@ class AdaptiveThreshold(AbstractThresholdType):
 
     def add_parameters(self, parameters):
         # Add initial values of the parameters that the user can change
-        parameters[_THRESHOLD_TAU] = self.tau
-        parameters[_THRESHOLD_UP] = self.v_increase
+        parameters[_THRESHOLD_VALUE] = self.v_threshold
+        parameters[_THRESHOLD_TAU] = self.tau_threshold
+        parameters[_THRESHOLD_UP] = self.w_threshold
         parameters[_THRESHOLD_BASE] = self.base_v_thresh
 
     def add_state_variables(self, state_variables):
-        state_variables[_THRESHOLD_VALUE] = self.v_thresh
+        state_variables[_THRESHOLD_VALUE] = self.v_threshold
 
     @inject_items({"ts": "MachineTimeStep"})
     def get_values(self, parameters, state_variables, vertex_slice, ts):
@@ -90,7 +91,7 @@ class AdaptiveThreshold(AbstractThresholdType):
         # state variables, or other
         tsfloat = float(ts) / 1000.0
         decay = lambda x: numpy.exp(-tsfloat / x)  # noqa E731
-        toWeight = lambda x: x * numpy.abs(self.v_thresh - self._v_rest)
+        toWeight = lambda x: x * numpy.abs(self.v_threshold - self._v_rest)
         return [state_variables[_THRESHOLD_VALUE],
                 parameters[_THRESHOLD_BASE],
                 parameters[_THRESHOLD_UP].apply_operation(toWeight),
