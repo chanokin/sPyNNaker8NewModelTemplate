@@ -50,7 +50,7 @@ static inline post_trace_t timing_add_post_spike(
     use(&last_time);
     use(&last_trace);
 
-    log_info("\tpost delta_time=%k\n", (accum)(time - last_time));
+    log_debug("\tpost delta_time=%k\n", (accum)(time - last_time));
 
     // TODO: Perform operations when a new post-spike occurs
 
@@ -65,7 +65,7 @@ static inline pre_trace_t timing_add_pre_spike(
     use(&last_time);
     use(&last_trace);
 
-    log_info("\tpre delta_time=%k\n", (accum)(time - last_time));
+    log_debug("\tpre delta_time=%k\n", (accum)(time - last_time));
     
     // TODO: Perform operations when a new pre-spike occurs
 
@@ -85,19 +85,20 @@ static inline update_state_t timing_apply_pre_spike(
     // TODO: Perform depression on pre spikes that occur after the
     // current spike
     accum time_since_last_post = (accum) (time - last_post_time);
-    log_info("\t\t\tappy_pre time_since_last_post = %k\n", time_since_last_post);
+    log_debug("\t\t\tAPPLY_PRE_SPIKE time = %k, last_post = %k, time_since_last_post = %k\n", 
+             (accum)time, (accum)last_post_time, time_since_last_post);
 
-    if (time_since_last_post > 0) {
+    if (time_since_last_post >= 0) {
         if (time_since_last_post <= tau_plus) {
 
-            log_info("\t\t\tappy_pre time_since_last_post = %k, tau_plus = %d\n",
+            log_debug("\t\t\tpotentiation time_since_last_post = %k <= tau_plus = %k\n",
                     time_since_last_post, tau_plus);
 
             return weight_one_term_apply_potentiation(previous_state, STDP_FIXED_POINT_ONE);
 
         } else if (time_since_last_post <= tau_minus){
 
-            log_info("\t\t\tappy_pre time_since_last_post = %k, tau_minus = %d\n",
+            log_debug("\t\t\tdepression time_since_last_post = %k <= tau_minus = %k\n",
                     time_since_last_post, tau_minus);
 
             return weight_one_term_apply_depression(previous_state, STDP_FIXED_POINT_ONE);
@@ -121,21 +122,22 @@ static inline update_state_t timing_apply_post_spike(
     // TODO: Perform potentiation on post spikes that occur after the
     // current spike
     accum time_since_last_pre = (accum) (time - last_pre_time);
-    accum time_since_last_post = (accum) (time - last_post_time);
+//     accum time_since_last_post = (accum) (time - last_post_time);
 
-    log_info("\t\t\tappy_pre time_since_last_pre=%k\n", time_since_last_pre);
+    log_debug("\t\t\tAPPLY_POST_SPIKE time = %k, last_pre = %k, time_since_last_pre=%k\n", 
+             (accum)time, (accum)last_pre_time, time_since_last_pre);
 
-    if (time_since_last_pre > 0) {
-        if (time_since_last_pre < tau_plus) {
+    if ((time_since_last_pre >= 0)){// && (time_since_last_post > time_since_last_pre)) {
+        if (time_since_last_pre <= tau_plus) {
 
-            log_info("\t\t\tappy_post time_since_last_pre=%k, tau_plus=%d\n",
+            log_debug("\t\t\tpotentiation - time_since_last_pre=%k <= tau_plus=%k\n",
                     time_since_last_pre, tau_plus);
 
             return weight_one_term_apply_potentiation(previous_state, STDP_FIXED_POINT_ONE);
 
-        } else if (time_since_last_pre < tau_minus){
+        } else if (time_since_last_pre <= tau_minus){
 
-            log_info("\t\t\tappy_post time_since_last_pre=%k, tau_minus=%d\n",
+            log_debug("\t\t\tdepression time_since_last_pre=%k <= tau_minus=%k\n",
                     time_since_last_pre, tau_minus);
 
             return weight_one_term_apply_depression(previous_state, STDP_FIXED_POINT_ONE);
